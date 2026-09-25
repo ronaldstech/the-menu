@@ -2,6 +2,7 @@ import { useState } from 'react'
 import heroImg from '../../assets/hero.png'
 import RestaurantManager from './RestaurantManager'
 import CategoryManager from './CategoryManager'
+import StaffManager from './StaffManager'
 import PhoneVerification from './PhoneVerification'
 
 const savedPlaces = [
@@ -89,7 +90,7 @@ function ProfileView({ user }) {
   return <section className="simple-view"><p className="dashboard-eyebrow">Your account</p><h1>Your profile.</h1><div className="profile-card"><div className="profile-avatar">{firstName.charAt(0).toUpperCase()}</div><div><h2>{firstName} {user?.last_name || 'Doe'}</h2><p>{user?.email || 'Not available'}</p></div><button className="text-action" type="button">Edit profile</button></div><div className="profile-details"><div className="profile-details__heading"><h2>Account details</h2><span className="profile-status">{user?.status || 'Unknown'}</span></div><dl>{details.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div></section>
 }
 
-function Dashboard({ user, token, onLogout, onPhoneVerified, createRestaurant, listRestaurants, getRestaurant, updateRestaurant, deleteRestaurant, listCategories, getCategory, createCategory, updateCategory, deleteCategory, sendPhoneOtp, verifyPhoneOtp }) {
+function Dashboard({ user, token, onLogout, onPhoneVerified, createRestaurant, listRestaurants, getRestaurant, updateRestaurant, deleteRestaurant, listCategories, getCategory, createCategory, updateCategory, deleteCategory, listStaff, getStaff, createStaff, updateStaff, deleteStaff, sendPhoneOtp, verifyPhoneOtp }) {
   const [phoneVerified, setPhoneVerified] = useState(user?.phone_verified === true || user?.phone_verified === 1)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const firstName = user?.first_name || user?.email?.split('@')[0] || 'John'
@@ -112,9 +113,9 @@ function Dashboard({ user, token, onLogout, onPhoneVerified, createRestaurant, l
   if (isCustomer && !isOwner) {
     return <main className="owner-onboarding-page"><PhoneVerification phone={user?.phone} token={token} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onVerified={markPhoneVerified} /></main>
   }
-  const views = { dashboard: <DashboardHome firstName={firstName} />, saved: <SavedView />, restaurant: <RestaurantManager token={token} listRestaurants={listRestaurants} getRestaurant={getRestaurant} createRestaurant={createRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} />, category: <CategoryManager token={token} listRestaurants={listRestaurants} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} />, profile: <ProfileView user={user} />, verify: <PhoneVerification phone={user?.phone} token={token} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onVerified={() => { markPhoneVerified(); setActiveView('restaurant') }} /> }
+  const views = { dashboard: <DashboardHome firstName={firstName} />, saved: <SavedView />, restaurant: <RestaurantManager token={token} listRestaurants={listRestaurants} getRestaurant={getRestaurant} createRestaurant={createRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} />, category: <CategoryManager token={token} listRestaurants={listRestaurants} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} />, staff: <StaffManager token={token} listRestaurants={listRestaurants} listStaff={listStaff} getStaff={getStaff} createStaff={createStaff} updateStaff={updateStaff} deleteStaff={deleteStaff} />, profile: <ProfileView user={user} />, verify: <PhoneVerification phone={user?.phone} token={token} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onVerified={() => { markPhoneVerified(); setActiveView('restaurant') }} /> }
   ownerFeatures.forEach(([key, label, icon]) => {
-    views[key] = key === 'restaurants' ? views.restaurant : key === 'category' ? views.category : <OwnerSection title={label} icon={icon} description={`Keep your ${label.toLowerCase()} organized and ready for service.`} />
+    views[key] = key === 'restaurants' ? views.restaurant : key === 'category' ? views.category : key === 'staff' ? views.staff : <OwnerSection title={label} icon={icon} description={`Keep your ${label.toLowerCase()} organized and ready for service.`} />
   })
   const selectView = (view) => { setActiveView(view); setIsMenuOpen(false) }
 

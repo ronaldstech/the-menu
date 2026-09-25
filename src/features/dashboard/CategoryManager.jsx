@@ -5,7 +5,7 @@ const emptyCategory = { restaurant_id: '', name: '', description: '', display_or
 function getItems(result) {
   if (Array.isArray(result)) return result
   if (!result || typeof result !== 'object') return []
-  for (const key of ['categories', 'data', 'items', 'results']) {
+  for (const key of ['categories', 'restaurants', 'data', 'items', 'results']) {
     if (Array.isArray(result[key])) return result[key]
     if (result[key] && typeof result[key] === 'object') {
       const nested = getItems(result[key])

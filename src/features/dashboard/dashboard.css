@@ -80,8 +80,9 @@
 .restaurant-form .field-row--three { grid-template-columns: repeat(3, 1fr); }
 .dashboard-field { color: var(--ink); display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 8px; margin-bottom: 17px; }
 .dashboard-field small { color: var(--muted); font-size: 10px; font-weight: 400; }
-.dashboard-field input, .dashboard-field textarea { background: #fafaf4; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); outline: 0; padding: 13px 14px; resize: vertical; width: 100%; }
-.dashboard-field input:focus, .dashboard-field textarea:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(109,74,255,.12); }
+.dashboard-field input, .dashboard-field textarea, .dashboard-field select { background: #fafaf4; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); outline: 0; padding: 13px 14px; resize: vertical; width: 100%; }
+.dashboard-field select { appearance: none; cursor: pointer; }
+.dashboard-field input:focus, .dashboard-field textarea:focus, .dashboard-field select:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(109,74,255,.12); }
 .dashboard-field input::placeholder, .dashboard-field textarea::placeholder { color: #a5aca1; }
 .restaurant-submit { border: 0; justify-content: space-between; width: 100%; }
 .restaurant-submit:disabled { cursor: wait; opacity: .65; }
@@ -103,6 +104,9 @@
 .restaurant-list-actions { align-items: center; display: flex; gap: 18px; margin-left: 20px; }
 .danger-action { background: transparent; border: 0; color: #a43c36; cursor: pointer; font-size: 12px; font-weight: 600; padding: 5px 0; }
 .category-manager { padding-top: 10px; }
+.staff-manager { padding-top: 10px; }
+.staff-role { background: rgba(215,242,104,.45); border-radius: 100px; color: var(--ink); font-size: 10px; font-weight: 600; margin-right: 6px; padding: 6px 11px; text-transform: capitalize; white-space: nowrap; }
+.staff-form-note { color: var(--muted); font-size: 12px; line-height: 1.5; margin: 0 0 17px; }
 .restaurant-selector { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 8px; margin: 0 0 28px; max-width: 340px; }
 .restaurant-selector select { background: #fffef9; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); padding: 12px 13px; }
 .category-toggle { align-items: flex-start; }
@@ -182,4 +186,5 @@
   .restaurant-list-item { align-items: flex-start; flex-direction: column; gap: 18px; }
   .restaurant-list-actions { margin-left: 0; }
   .category-manager .manager-heading { margin-bottom: 24px; }
+  .staff-manager .manager-heading { margin-bottom: 24px; }
 }

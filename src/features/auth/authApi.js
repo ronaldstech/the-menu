@@ -11,6 +11,11 @@ const LIST_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/list.php
 const GET_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/get.php'
 const UPDATE_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/update.php'
 const DELETE_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/delete.php'
+const LIST_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/list.php'
+const GET_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/get.php'
+const CREATE_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/create.php'
+const UPDATE_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/update.php'
+const DELETE_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/delete.php'
 const SEND_PHONE_OTP_URL = 'http://192.168.1.168/the_menu/api/auth/send-otp.php'
 const VERIFY_PHONE_OTP_URL = 'http://192.168.1.168/the_menu/api/auth/verify-otp.php'
 const VERIFY_EMAIL_URL = 'http://192.168.1.168/the_menu/api/auth/verify.php'
@@ -109,6 +114,26 @@ export function updateCategory(category, token) {
 
 export function deleteCategory(id, token) {
   return getAuthRequest(`${DELETE_CATEGORY_URL}?id=${encodeURIComponent(id)}`, token, 'Category deletion', 'DELETE')
+}
+
+export function listStaff(restaurantId, token) {
+  return getAuthRequest(`${LIST_STAFF_URL}?restaurant_id=${encodeURIComponent(restaurantId)}`, token, 'Loading staff')
+}
+
+export function getStaff(id, token) {
+  return getAuthRequest(`${GET_STAFF_URL}?id=${encodeURIComponent(id)}`, token, 'Loading staff member')
+}
+
+export function createStaff(staff, token) {
+  return postAuthRequestWithToken(CREATE_STAFF_URL, staff, token, 'Staff creation')
+}
+
+export function updateStaff(staff, token) {
+  return postAuthRequestWithToken(UPDATE_STAFF_URL, staff, token, 'Staff update', 'PUT')
+}
+
+export function deleteStaff(id, token) {
+  return getAuthRequest(`${DELETE_STAFF_URL}?id=${encodeURIComponent(id)}`, token, 'Staff deletion', 'DELETE')
 }
 
 export function sendPhoneOtp(phone, token) {
