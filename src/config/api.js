@@ -1,4 +1,4 @@
-const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://192.168.1.152/the_menu'
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://apexspacemw.com/rt/the_menu'
 
 export const API_BASE_URL = configuredBaseUrl.replace(/\/+$/, '')
 

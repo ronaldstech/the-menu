@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { API_BASE_URL } from '../../config/api'
 import './public-menu.css'
 
@@ -43,61 +43,139 @@ function formatPrice(value, currencyCode) {
 function FoodItem({ item, currencyCode }) {
   if (!isAvailable(item.is_available)) return null
   const photo = imageUrl(item.image_url)
-  const category = typeof item.category === 'string' ? item.category : item.category?.name || item.category_name
-  return <article className="public-food-item">
-    {photo && <img className="public-food-item__image" src={photo} alt="" loading="lazy" />}
-    <div className="public-food-item__body">
-      <div className="public-food-item__heading"><h3>{item.name}</h3>{item.price !== undefined && <span>{formatPrice(item.price, currencyCode)}</span>}</div>
-      {category && <p className="public-food-item__category">{category}</p>}
-      {item.description && <p className="public-food-item__description">{item.description}</p>}
-    </div>
-  </article>
+  
+  return (
+    <article className="public-food-item">
+      {photo && <img className="public-food-item__image" src={photo} alt="" loading="lazy" />}
+      <div className="public-food-item__body">
+        <div className="public-food-item__heading">
+          <h3>{item.name}</h3>
+          {item.price !== undefined && <span>{formatPrice(item.price, currencyCode)}</span>}
+        </div>
+        {item.description && <p className="public-food-item__description">{item.description}</p>}
+      </div>
+    </article>
+  )
 }
 
-function PublicMenuPage({ tableToken, loadPublicMenu }) {
+function PublicMenuPage({ tableToken: propTableToken, loadPublicMenu }) {
   const [menuData, setMenuData] = useState(null)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const headerRef = useRef(null)
 
   useEffect(() => {
     let isCurrent = true
-    loadPublicMenu(tableToken).then((result) => {
+
+    // Fallback: If tableToken is not passed via props, try to extract it from URL path or query parameters
+    let token = propTableToken
+    if (!token) {
+      const pathSegments = window.location.pathname.split('/').filter(Boolean)
+      // Example: if URL is /menu/xyz-token or /table/xyz-token
+      token = pathSegments[pathSegments.length - 1]
+      
+      // Alternatively check query string (?token=xyz or ?table=xyz)
+      if (!token || token === 'menu') {
+        const params = new URLSearchParams(window.location.search)
+        token = params.get('token') || params.get('table') || params.get('t')
+      }
+    }
+
+    if (!token || token === '[object Object]') {
+      if (isCurrent) {
+        setError('A valid table token or link is required to view this menu.')
+        setIsLoading(false)
+      }
+      return
+    }
+
+    loadPublicMenu(token).then((result) => {
       if (isCurrent) setMenuData(normalizeMenuResponse(result))
     }).catch((requestError) => {
       if (isCurrent) setError(requestError.message || 'Could not load this restaurant menu.')
     }).finally(() => {
       if (isCurrent) setIsLoading(false)
     })
-    return () => { isCurrent = false }
-  }, [loadPublicMenu, tableToken])
+
+    const handleScroll = () => {
+      if (!headerRef.current) return
+      if (window.scrollY > 40) {
+        headerRef.current.classList.add('is-scrolled')
+      } else {
+        headerRef.current.classList.remove('is-scrolled')
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => { 
+      isCurrent = false 
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [loadPublicMenu, propTableToken])
 
   if (isLoading) return <main className="public-menu-page"><p className="public-menu-state">Loading menu…</p></main>
-  if (error) return <main className="public-menu-page"><section className="public-menu-error"><span className="public-menu-mark" aria-hidden="true">tm</span><h1>Menu unavailable</h1><p>{error}</p></section></main>
+  if (error) return <main className="public-menu-page"><section className="public-menu-error"><h1>Menu unavailable</h1><p>{error}</p></section></main>
 
-  const { restaurant, table, menus } = menuData || {}
-  if (!restaurant) return <main className="public-menu-page"><section className="public-menu-error"><span className="public-menu-mark" aria-hidden="true">tm</span><h1>Menu unavailable</h1><p>This table link did not return a restaurant menu.</p></section></main>
+  const { restaurant, menus } = menuData || {}
+  if (!restaurant) return <main className="public-menu-page"><section className="public-menu-error"><h1>Menu unavailable</h1><p>This table link did not return a restaurant menu.</p></section></main>
+
   const currencyCode = restaurant.currency_code || restaurant.currency
   const address = [restaurant.address_line_1, restaurant.city, restaurant.country].filter(Boolean).join(', ')
+  const logoPhoto = imageUrl(restaurant.logo_url)
 
-  return <main className="public-menu-page">
-    <header className="public-menu-header">
-      <span className="public-menu-mark" aria-hidden="true">tm</span>
-      <p className="public-menu-eyebrow">{table?.name || (table?.table_number ? `Table ${table.table_number}` : 'Restaurant menu')}</p>
-      <h1>{restaurant.name}</h1>
-      {restaurant.description && <p className="public-menu-description">{restaurant.description}</p>}
-      {address && <p className="public-menu-address">{address}</p>}
-    </header>
-    <div className="public-menu-content">
-      {menus.length === 0 ? <p className="public-menu-state">This restaurant has no published food yet.</p> : menus.map((menu) => {
-        const items = menu.items.filter(isAvailable)
-        return <section className="public-menu-section" key={menu.id || menu.name}>
-          <h2>{menu.name || 'Menu'}</h2>
-          {items.length ? <div className="public-food-list">{items.map((item) => <FoodItem key={item.id || `${menu.id}-${item.name}`} item={item} currencyCode={currencyCode} />)}</div> : <p className="public-menu-state">No food items are available in this menu.</p>}
-        </section>
-      })}
-    </div>
-    <footer className="public-menu-footer">Powered by The Menu</footer>
-  </main>
+  return (
+    <main className="public-menu-page">
+      <header className="public-menu-header" ref={headerRef}>
+        <div className="public-menu-header-container">
+          
+          <div className="public-menu-logo-wrap">
+            {logoPhoto ? (
+              <img src={logoPhoto} alt={restaurant.name} className="public-menu-logo" />
+            ) : (
+              <span className="public-menu-mark" aria-hidden="true">
+                {restaurant.name?.charAt(0) || 'R'}
+              </span>
+            )}
+          </div>
+
+          <div className="public-menu-details-wrapper">
+            <h1>{restaurant.name}</h1>
+            <div className="public-menu-meta-row">
+              {restaurant.description && <p className="public-menu-description">{restaurant.description}</p>}
+              {address && <p className="public-menu-address">{address}</p>}
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <div className="public-menu-content">
+        {menus.length === 0 ? (
+          <p className="public-menu-state">This restaurant has no published food yet.</p>
+        ) : (
+          menus.map((menu) => {
+            const items = menu.items.filter(isAvailable)
+            return (
+              <section className="public-menu-section" key={menu.id || menu.name}>
+                <h2>{menu.name || 'Menu'}</h2>
+                {items.length ? (
+                  <div className="public-food-list">
+                    {items.map((item) => (
+                      <FoodItem key={item.id || `${menu.id}-${item.name}`} item={item} currencyCode={currencyCode} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="public-menu-state">No food items are available in this menu.</p>
+                )}
+              </section>
+            )
+          })
+        )}
+      </div>
+
+      <footer className="public-menu-footer">Powered by The Menu</footer>
+    </main>
+  )
 }
 
 export default PublicMenuPage
