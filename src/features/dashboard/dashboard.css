@@ -160,14 +160,14 @@
   .mobile-dashboard-bar { align-items: center; display: flex; justify-content: space-between; padding: 22px 24px; }
   .mobile-menu-button { align-items: center; background: transparent; border: 0; color: var(--ink); cursor: pointer; display: flex; justify-content: center; padding: 5px; }
   .mobile-menu-button .dashboard-icon { height: 22px; width: 22px; }
-  .mobile-dashboard-drawer { background: var(--ink); bottom: 0; color: #f9f9f1; display: flex; flex-direction: column; left: 0; padding: 25px 24px; position: fixed; top: 0; transform: translateX(-100%); transition: transform .25s ease; width: min(82vw, 310px); z-index: 5; }
+  .mobile-dashboard-drawer { background: var(--ink); bottom: 0; color: #f9f9f1; display: flex; flex-direction: column; left: 0; overflow-y: auto; overscroll-behavior: contain; padding: 25px 24px; position: fixed; top: 0; transform: translateX(-100%); transition: transform .25s ease; width: min(82vw, 310px); z-index: 5; }
   .mobile-dashboard-drawer.is-open { transform: translateX(0); }
   .mobile-dashboard-drawer .mobile-drawer-header { align-items: center; display: flex; justify-content: space-between; }
   .mobile-dashboard-drawer .mobile-menu-button { color: #f9f9f1; }
-  .mobile-dashboard-drawer .dashboard-nav { margin-top: 70px; }
+  .mobile-dashboard-drawer .dashboard-nav { flex: 1 1 auto; margin-top: 45px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
   .mobile-dashboard-drawer .dashboard-nav button { align-items: center; background: transparent; border: 0; border-radius: 4px; color: #9ca99d; cursor: pointer; display: flex; font-size: 13px; gap: 12px; padding: 13px 11px; text-align: left; width: 100%; }
   .mobile-dashboard-drawer .dashboard-nav button.is-active, .mobile-dashboard-drawer .dashboard-nav button:hover { background: rgba(255,255,255,.09); color: #fff; }
-  .mobile-dashboard-drawer .logout-button { color: #9ca99d; margin-top: auto; }
+  .mobile-dashboard-drawer .logout-button { color: #9ca99d; flex: 0 0 auto; margin-top: 18px; }
   .mobile-menu-backdrop { background: rgba(25,34,29,.42); border: 0; display: block; inset: 0; position: fixed; z-index: 4; }
   .dashboard-content { padding: 27px 24px 104px; }
   .dashboard-header .header-avatar { display: none; }
