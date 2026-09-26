@@ -2,21 +2,26 @@ import { useState } from 'react'
 import AuthShell from './features/auth/AuthShell'
 import { LoginForm, SignupForm } from './features/auth/AuthForms'
 import EmailVerification from './features/auth/EmailVerification'
-import { clearStoredAuth, createCategory, createMenu, createRestaurant, deleteCategory, deleteMenu, deleteRestaurant, getCategory, getCurrentUser, getMenu, getRestaurant, getStoredAuth, listCategories, listMenus, listRestaurants, loginUser, registerUser, sendPhoneOtp, storeAuth, updateCategory, updateMenu, updateRestaurant, verifyEmailCode, verifyPhoneOtp, listStaff, getStaff, createStaff, updateStaff, deleteStaff } from './features/auth/authApi'
+import { clearStoredAuth, createCategory, createMenu, createRestaurant, deleteCategory, deleteMenu, deleteRestaurant, getCategory, getCurrentUser, getMenu, getRestaurant, getStoredAuth, listCategories, listMenus, listRestaurants, loginUser, registerUser, sendPhoneOtp, storeAuth, updateCategory, updateMenu, updateRestaurant, verifyEmailCode, verifyPhoneOtp, listStaff, getStaff, createStaff, updateStaff, deleteStaff, listMenuItems, getMenuItem, createMenuItem, updateMenuItem, deleteMenuItem, listTables, getTable, createTable, updateTable, deleteTable } from './features/auth/authApi'
 import Dashboard from './features/dashboard/Dashboard'
+import PublicMenuPage from './features/public-menu/PublicMenuPage'
+import { getPublicMenuByTableToken } from './features/auth/authApi'
 import './features/auth/auth.css'
 import './features/dashboard/dashboard.css'
 import { useEffect } from 'react'
 
 function App() {
+  const query = new URLSearchParams(window.location.search)
+  const tableToken = query.get('token') || query.get('table_token') || null
   const [mode, setMode] = useState('login')
   const [notice, setNotice] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [auth, setAuth] = useState(getStoredAuth)
-  const [isRestoring, setIsRestoring] = useState(() => Boolean(getStoredAuth()?.token))
+  const [isRestoring, setIsRestoring] = useState(() => Boolean(getStoredAuth()?.token) && !tableToken)
   const [pendingVerification, setPendingVerification] = useState(null)
 
   useEffect(() => {
+    if (tableToken) return
     const storedAuth = getStoredAuth()
     if (!storedAuth?.token) {
       return
@@ -33,7 +38,7 @@ function App() {
         setAuth(null)
       })
       .finally(() => setIsRestoring(false))
-  }, [])
+  }, [tableToken])
 
   const handleSubmit = async (event, form) => {
     event.preventDefault()
@@ -68,8 +73,10 @@ function App() {
     setAuth(nextAuth)
   }
 
+  if (tableToken) return <PublicMenuPage tableToken={tableToken} loadPublicMenu={getPublicMenuByTableToken} />
+
   if (auth?.user) {
-    return <Dashboard user={auth.user} token={auth.token} createRestaurant={createRestaurant} listRestaurants={listRestaurants} getRestaurant={getRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} listMenus={listMenus} getMenu={getMenu} createMenu={createMenu} updateMenu={updateMenu} deleteMenu={deleteMenu} listStaff={listStaff} getStaff={getStaff} createStaff={createStaff} updateStaff={updateStaff} deleteStaff={deleteStaff} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onPhoneVerified={handlePhoneVerified} onLogout={() => { clearStoredAuth(); setAuth(null) }} />
+    return <Dashboard user={auth.user} token={auth.token} createRestaurant={createRestaurant} listRestaurants={listRestaurants} getRestaurant={getRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} listMenus={listMenus} getMenu={getMenu} createMenu={createMenu} updateMenu={updateMenu} deleteMenu={deleteMenu} listMenuItems={listMenuItems} getMenuItem={getMenuItem} createMenuItem={createMenuItem} updateMenuItem={updateMenuItem} deleteMenuItem={deleteMenuItem} listTables={listTables} getTable={getTable} createTable={createTable} updateTable={updateTable} deleteTable={deleteTable} listStaff={listStaff} getStaff={getStaff} createStaff={createStaff} updateStaff={updateStaff} deleteStaff={deleteStaff} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onPhoneVerified={handlePhoneVerified} onLogout={() => { clearStoredAuth(); setAuth(null) }} />
   }
 
   if (isRestoring) return <div className="auth-loading" role="status">Loading your table...</div>
