@@ -51,11 +51,19 @@ async function postAuthRequest(url, payload, action) {
   }
 
   if (!response.ok) {
-    throw new Error(result?.message || `${action} failed (${response.status}).`)
+    const error = new Error(result?.message || `${action} failed (${response.status}).`)
+    error.status = response.status
+    error.code = result?.code
+    error.data = result
+    throw error
   }
 
   if (result?.success === false) {
-    throw new Error(result.message || `${action} failed.`)
+    const error = new Error(result.message || `${action} failed.`)
+    error.status = response.status
+    error.code = result?.code
+    error.data = result
+    throw error
   }
 
   return result

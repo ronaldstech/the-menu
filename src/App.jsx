@@ -20,6 +20,15 @@ function App() {
   const [isRestoring, setIsRestoring] = useState(() => Boolean(getStoredAuth()?.token) && !tableToken)
   const [pendingVerification, setPendingVerification] = useState(null)
 
+  const accountIsInactive = (value) => {
+    const user = value?.user || value?.account || value?.data?.user || value?.data?.account
+    const status = String(user?.status || user?.account_status || value?.status || value?.account_status || '').toLowerCase()
+    if (/inactive|pending|unverified|verification|not[_\s-]?active|not[_\s-]?activated/.test(status)) return true
+    if (user?.is_active === false || user?.is_active === 0 || user?.is_active === '0') return true
+    const message = `${value?.code || ''} ${value?.message || ''}`.toLowerCase()
+    return /account.{0,30}(inactive|not active|not activated|pending|unverified|verif(?:y|ied|ication))|verif(?:y|ied|ication).{0,30}account|(?:inactive|not active|pending verification|unverified account)/.test(message)
+  }
+
   useEffect(() => {
     if (tableToken) return
     const storedAuth = getStoredAuth()
@@ -47,14 +56,23 @@ function App() {
     try {
       if (mode === 'login') {
         const result = await loginUser(form)
+        if (accountIsInactive(result)) {
+          setPendingVerification({ email: form.email, backMode: 'login' })
+          return
+        }
         const nextAuth = { token: result.token, user: result.user }
         storeAuth(nextAuth)
         setAuth(nextAuth)
       } else {
         await registerUser(form)
-        setPendingVerification({ email: form.email, phone: form.phone })
+        setPendingVerification({ email: form.email, phone: form.phone, backMode: 'signup' })
       }
     } catch (error) {
+      if (mode === 'login' && accountIsInactive(error.data || error)) {
+        setPendingVerification({ email: form.email, backMode: 'login' })
+        setNotice('')
+        return
+      }
       setNotice(error.message || `We could not ${mode === 'login' ? 'log you in' : 'create your account'}. Please try again.`)
     } finally {
       setIsSubmitting(false)
@@ -70,12 +88,12 @@ function App() {
   if (isRestoring) return <div className="auth-loading" role="status">Loading your table...</div>
 
   if (pendingVerification) {
-    return <PhoneVerification email={pendingVerification.email} phone={pendingVerification.phone} verifyRegistrationCode={verifyRegistrationCode} onVerified={(result) => {
+    return <PhoneVerification email={pendingVerification.email} phone={pendingVerification.phone} verifyRegistrationCode={verifyRegistrationCode} backLabel={pendingVerification.backMode === 'login' ? 'Back to login' : 'Back to sign up'} onVerified={(result) => {
       const nextAuth = { token: result.token, user: result.user }
       storeAuth(nextAuth)
       setAuth(nextAuth)
       setPendingVerification(null)
-    }} onBack={() => setPendingVerification(null)} />
+    }} onBack={() => { setMode(pendingVerification.backMode || 'signup'); setPendingVerification(null) }} />
   }
 
   return (
