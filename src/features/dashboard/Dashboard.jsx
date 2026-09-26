@@ -38,6 +38,14 @@ function BrandMark() {
   return <span className="dashboard-brand-mark" aria-hidden="true"><i /><b /></span>
 }
 
+function hasRole(user, roleName) {
+  const assignedRoles = Array.isArray(user?.roles) ? user.roles : typeof user?.roles === 'string' ? user.roles.split(',') : []
+  const normalizedRoles = assignedRoles.map((role) => typeof role === 'string' ? role.trim().toLowerCase() : String(role?.name || role?.role || role?.slug || '').trim().toLowerCase())
+  const directRole = typeof user?.role === 'string' ? user.role.trim().toLowerCase() : String(user?.role?.name || user?.role?.role || '').trim().toLowerCase()
+  const accountType = String(user?.account_type || '').trim().toLowerCase()
+  return normalizedRoles.includes(roleName) || directRole === roleName || accountType === roleName
+}
+
 function DashboardHome({ firstName }) {
   return (
     <>
@@ -94,8 +102,8 @@ function ProfileView({ user }) {
 function Dashboard({ user, token, onLogout, createRestaurant, listRestaurants, getRestaurant, updateRestaurant, deleteRestaurant, listCategories, getCategory, createCategory, updateCategory, deleteCategory, listMenus, getMenu, createMenu, updateMenu, deleteMenu, listMenuItems, getMenuItem, createMenuItem, updateMenuItem, deleteMenuItem, listTables, getTable, createTable, updateTable, deleteTable, listStaff, getStaff, createStaff, updateStaff, deleteStaff }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const firstName = user?.first_name || user?.email?.split('@')[0] || 'John'
-  const isCustomer = user?.roles?.includes('customer')
-  const isOwner = user?.roles?.includes('owner')
+  const isCustomer = hasRole(user, 'customer')
+  const isOwner = hasRole(user, 'owner')
   const [activeView, setActiveView] = useState('dashboard')
   const ownerFeatures = [
     ['restaurants', 'Restaurants', 'restaurant'],
