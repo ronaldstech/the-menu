@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import AuthShell from './features/auth/AuthShell'
 import { LoginForm, SignupForm } from './features/auth/AuthForms'
-import EmailVerification from './features/auth/EmailVerification'
-import { clearStoredAuth, createCategory, createMenu, createRestaurant, deleteCategory, deleteMenu, deleteRestaurant, getCategory, getCurrentUser, getMenu, getRestaurant, getStoredAuth, listCategories, listMenus, listRestaurants, loginUser, registerUser, sendPhoneOtp, storeAuth, updateCategory, updateMenu, updateRestaurant, verifyEmailCode, verifyPhoneOtp, listStaff, getStaff, createStaff, updateStaff, deleteStaff, listMenuItems, getMenuItem, createMenuItem, updateMenuItem, deleteMenuItem, listTables, getTable, createTable, updateTable, deleteTable } from './features/auth/authApi'
+import PhoneVerification from './features/auth/PhoneVerification'
+import { clearStoredAuth, createCategory, createMenu, createRestaurant, deleteCategory, deleteMenu, deleteRestaurant, getCategory, getCurrentUser, getMenu, getRestaurant, getStoredAuth, listCategories, listMenus, listRestaurants, loginUser, registerUser, storeAuth, updateCategory, updateMenu, updateRestaurant, verifyRegistrationCode, listStaff, getStaff, createStaff, updateStaff, deleteStaff, listMenuItems, getMenuItem, createMenuItem, updateMenuItem, deleteMenuItem, listTables, getTable, createTable, updateTable, deleteTable } from './features/auth/authApi'
 import Dashboard from './features/dashboard/Dashboard'
 import PublicMenuPage from './features/public-menu/PublicMenuPage'
 import { getPublicMenuByTableToken } from './features/auth/authApi'
@@ -52,7 +52,7 @@ function App() {
         setAuth(nextAuth)
       } else {
         await registerUser(form)
-        setPendingVerification({ email: form.email })
+        setPendingVerification({ email: form.email, phone: form.phone })
       }
     } catch (error) {
       setNotice(error.message || `We could not ${mode === 'login' ? 'log you in' : 'create your account'}. Please try again.`)
@@ -61,28 +61,16 @@ function App() {
     }
   }
 
-  const handlePhoneVerified = () => {
-    if (!auth?.user) return
-    const nextUser = {
-      ...auth.user,
-      phone_verified: true,
-      roles: Array.from(new Set([...(auth.user.roles || []), 'owner'])),
-    }
-    const nextAuth = { ...auth, user: nextUser }
-    storeAuth(nextAuth)
-    setAuth(nextAuth)
-  }
-
   if (tableToken) return <PublicMenuPage tableToken={tableToken} loadPublicMenu={getPublicMenuByTableToken} />
 
   if (auth?.user) {
-    return <Dashboard user={auth.user} token={auth.token} createRestaurant={createRestaurant} listRestaurants={listRestaurants} getRestaurant={getRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} listMenus={listMenus} getMenu={getMenu} createMenu={createMenu} updateMenu={updateMenu} deleteMenu={deleteMenu} listMenuItems={listMenuItems} getMenuItem={getMenuItem} createMenuItem={createMenuItem} updateMenuItem={updateMenuItem} deleteMenuItem={deleteMenuItem} listTables={listTables} getTable={getTable} createTable={createTable} updateTable={updateTable} deleteTable={deleteTable} listStaff={listStaff} getStaff={getStaff} createStaff={createStaff} updateStaff={updateStaff} deleteStaff={deleteStaff} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onPhoneVerified={handlePhoneVerified} onLogout={() => { clearStoredAuth(); setAuth(null) }} />
+    return <Dashboard user={auth.user} token={auth.token} createRestaurant={createRestaurant} listRestaurants={listRestaurants} getRestaurant={getRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} listMenus={listMenus} getMenu={getMenu} createMenu={createMenu} updateMenu={updateMenu} deleteMenu={deleteMenu} listMenuItems={listMenuItems} getMenuItem={getMenuItem} createMenuItem={createMenuItem} updateMenuItem={updateMenuItem} deleteMenuItem={deleteMenuItem} listTables={listTables} getTable={getTable} createTable={createTable} updateTable={updateTable} deleteTable={deleteTable} listStaff={listStaff} getStaff={getStaff} createStaff={createStaff} updateStaff={updateStaff} deleteStaff={deleteStaff} onLogout={() => { clearStoredAuth(); setAuth(null) }} />
   }
 
   if (isRestoring) return <div className="auth-loading" role="status">Loading your table...</div>
 
   if (pendingVerification) {
-    return <EmailVerification email={pendingVerification.email} verifyEmailCode={verifyEmailCode} onVerified={(result) => {
+    return <PhoneVerification email={pendingVerification.email} phone={pendingVerification.phone} verifyRegistrationCode={verifyRegistrationCode} onVerified={(result) => {
       const nextAuth = { token: result.token, user: result.user }
       storeAuth(nextAuth)
       setAuth(nextAuth)

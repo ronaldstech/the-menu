@@ -34,9 +34,7 @@ const GET_STAFF_URL = apiUrl('/api/staff/get.php')
 const CREATE_STAFF_URL = apiUrl('/api/staff/create.php')
 const UPDATE_STAFF_URL = apiUrl('/api/staff/update.php')
 const DELETE_STAFF_URL = apiUrl('/api/staff/delete.php')
-const SEND_PHONE_OTP_URL = apiUrl('/api/auth/send-otp.php')
-const VERIFY_PHONE_OTP_URL = apiUrl('/api/auth/verify-otp.php')
-const VERIFY_EMAIL_URL = apiUrl('/api/auth/verify.php')
+const VERIFY_REGISTRATION_URL = apiUrl('/api/auth/verify.php')
 
 async function postAuthRequest(url, payload, action) {
   const response = await fetch(url, {
@@ -71,8 +69,8 @@ export function loginUser(credentials) {
   return postAuthRequest(LOGIN_URL, credentials, 'Login')
 }
 
-export function verifyEmailCode(email, code) {
-  return postAuthRequest(VERIFY_EMAIL_URL, { email, code }, 'Account verification')
+export function verifyRegistrationCode(email, code) {
+  return postAuthRequest(VERIFY_REGISTRATION_URL, { email, code }, 'Account verification')
 }
 
 export async function getCurrentUser(token) {
@@ -221,14 +219,6 @@ export function updateStaff(staff, token) {
 
 export function deleteStaff(id, token) {
   return getAuthRequest(`${DELETE_STAFF_URL}?id=${encodeURIComponent(id)}`, token, 'Staff deletion', 'DELETE')
-}
-
-export function sendPhoneOtp(phone, token) {
-  return postAuthRequestWithToken(SEND_PHONE_OTP_URL, { phone }, token, 'Sending verification code')
-}
-
-export function verifyPhoneOtp(phone, otp, token) {
-  return postAuthRequestWithToken(VERIFY_PHONE_OTP_URL, { phone, otp }, token, 'Phone verification')
 }
 
 async function getAuthRequest(url, token, action, method = 'GET') {
