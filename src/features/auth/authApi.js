@@ -1,24 +1,31 @@
-const REGISTER_URL = 'http://192.168.1.168/the_menu/api/auth/register.php'
-const LOGIN_URL = 'http://192.168.1.168/the_menu/api/auth/login.php'
-const ME_URL = 'http://192.168.1.168/the_menu/api/auth/me.php'
-const CREATE_RESTAURANT_URL = 'http://192.168.1.168/the_menu/api/restaurants/create.php'
-const LIST_RESTAURANTS_URL = 'http://192.168.1.168/the_menu/api/restaurants/list.php'
-const GET_RESTAURANT_URL = 'http://192.168.1.168/the_menu/api/restaurants/get.php'
-const UPDATE_RESTAURANT_URL = 'http://192.168.1.168/the_menu/api/restaurants/update.php'
-const DELETE_RESTAURANT_URL = 'http://192.168.1.168/the_menu/api/restaurants/delete.php'
-const CREATE_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/create.php'
-const LIST_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/list.php'
-const GET_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/get.php'
-const UPDATE_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/update.php'
-const DELETE_CATEGORY_URL = 'http://192.168.1.168/the_menu/api/categories/delete.php'
-const LIST_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/list.php'
-const GET_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/get.php'
-const CREATE_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/create.php'
-const UPDATE_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/update.php'
-const DELETE_STAFF_URL = 'http://192.168.1.168/the_menu/api/staff/delete.php'
-const SEND_PHONE_OTP_URL = 'http://192.168.1.168/the_menu/api/auth/send-otp.php'
-const VERIFY_PHONE_OTP_URL = 'http://192.168.1.168/the_menu/api/auth/verify-otp.php'
-const VERIFY_EMAIL_URL = 'http://192.168.1.168/the_menu/api/auth/verify.php'
+import { apiUrl } from '../../config/api'
+
+const REGISTER_URL = apiUrl('/api/auth/register.php')
+const LOGIN_URL = apiUrl('/api/auth/login.php')
+const ME_URL = apiUrl('/api/auth/me.php')
+const CREATE_RESTAURANT_URL = apiUrl('/api/restaurants/create.php')
+const LIST_RESTAURANTS_URL = apiUrl('/api/restaurants/list.php')
+const GET_RESTAURANT_URL = apiUrl('/api/restaurants/get.php')
+const UPDATE_RESTAURANT_URL = apiUrl('/api/restaurants/update.php')
+const DELETE_RESTAURANT_URL = apiUrl('/api/restaurants/delete.php')
+const CREATE_CATEGORY_URL = apiUrl('/api/categories/create.php')
+const LIST_CATEGORY_URL = apiUrl('/api/categories/list.php')
+const GET_CATEGORY_URL = apiUrl('/api/categories/get.php')
+const UPDATE_CATEGORY_URL = apiUrl('/api/categories/update.php')
+const DELETE_CATEGORY_URL = apiUrl('/api/categories/delete.php')
+const LIST_MENUS_URL = apiUrl('/api/menus/list.php')
+const GET_MENU_URL = apiUrl('/api/menus/get.php')
+const CREATE_MENU_URL = apiUrl('/api/menus/create.php')
+const UPDATE_MENU_URL = apiUrl('/api/menus/update.php')
+const DELETE_MENU_URL = apiUrl('/api/menus/delete.php')
+const LIST_STAFF_URL = apiUrl('/api/staff/list.php')
+const GET_STAFF_URL = apiUrl('/api/staff/get.php')
+const CREATE_STAFF_URL = apiUrl('/api/staff/create.php')
+const UPDATE_STAFF_URL = apiUrl('/api/staff/update.php')
+const DELETE_STAFF_URL = apiUrl('/api/staff/delete.php')
+const SEND_PHONE_OTP_URL = apiUrl('/api/auth/send-otp.php')
+const VERIFY_PHONE_OTP_URL = apiUrl('/api/auth/verify-otp.php')
+const VERIFY_EMAIL_URL = apiUrl('/api/auth/verify.php')
 
 async function postAuthRequest(url, payload, action) {
   const response = await fetch(url, {
@@ -116,6 +123,26 @@ export function deleteCategory(id, token) {
   return getAuthRequest(`${DELETE_CATEGORY_URL}?id=${encodeURIComponent(id)}`, token, 'Category deletion', 'DELETE')
 }
 
+export function listMenus(restaurantId, token) {
+  return getAuthRequest(`${LIST_MENUS_URL}?restaurant_id=${encodeURIComponent(restaurantId)}`, token, 'Loading menus')
+}
+
+export function getMenu(id, token) {
+  return getAuthRequest(`${GET_MENU_URL}?id=${encodeURIComponent(id)}`, token, 'Loading menu')
+}
+
+export function createMenu(menu, token) {
+  return postAuthRequestWithToken(CREATE_MENU_URL, menu, token, 'Menu creation')
+}
+
+export function updateMenu(menu, token) {
+  return postAuthRequestWithToken(UPDATE_MENU_URL, menu, token, 'Menu update', 'PUT')
+}
+
+export function deleteMenu(id, token) {
+  return getAuthRequest(`${DELETE_MENU_URL}?id=${encodeURIComponent(id)}`, token, 'Menu deletion', 'DELETE')
+}
+
 export function listStaff(restaurantId, token) {
   return getAuthRequest(`${LIST_STAFF_URL}?restaurant_id=${encodeURIComponent(restaurantId)}`, token, 'Loading staff')
 }
@@ -195,3 +222,4 @@ export function storeAuth(auth) {
 export function clearStoredAuth() {
   localStorage.removeItem(AUTH_STORAGE_KEY)
 }
+

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import AuthShell from './features/auth/AuthShell'
 import { LoginForm, SignupForm } from './features/auth/AuthForms'
 import EmailVerification from './features/auth/EmailVerification'
-import { clearStoredAuth, createCategory, createRestaurant, deleteCategory, deleteRestaurant, getCategory, getCurrentUser, getRestaurant, getStoredAuth, listCategories, listRestaurants, loginUser, registerUser, sendPhoneOtp, storeAuth, updateCategory, updateRestaurant, verifyEmailCode, verifyPhoneOtp, listStaff, getStaff, createStaff, updateStaff, deleteStaff } from './features/auth/authApi'
+import { clearStoredAuth, createCategory, createMenu, createRestaurant, deleteCategory, deleteMenu, deleteRestaurant, getCategory, getCurrentUser, getMenu, getRestaurant, getStoredAuth, listCategories, listMenus, listRestaurants, loginUser, registerUser, sendPhoneOtp, storeAuth, updateCategory, updateMenu, updateRestaurant, verifyEmailCode, verifyPhoneOtp, listStaff, getStaff, createStaff, updateStaff, deleteStaff } from './features/auth/authApi'
 import Dashboard from './features/dashboard/Dashboard'
 import './features/auth/auth.css'
 import './features/dashboard/dashboard.css'
@@ -69,7 +69,7 @@ function App() {
   }
 
   if (auth?.user) {
-    return <Dashboard user={auth.user} token={auth.token} createRestaurant={createRestaurant} listRestaurants={listRestaurants} getRestaurant={getRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} listStaff={listStaff} getStaff={getStaff} createStaff={createStaff} updateStaff={updateStaff} deleteStaff={deleteStaff} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onPhoneVerified={handlePhoneVerified} onLogout={() => { clearStoredAuth(); setAuth(null) }} />
+    return <Dashboard user={auth.user} token={auth.token} createRestaurant={createRestaurant} listRestaurants={listRestaurants} getRestaurant={getRestaurant} updateRestaurant={updateRestaurant} deleteRestaurant={deleteRestaurant} listCategories={listCategories} getCategory={getCategory} createCategory={createCategory} updateCategory={updateCategory} deleteCategory={deleteCategory} listMenus={listMenus} getMenu={getMenu} createMenu={createMenu} updateMenu={updateMenu} deleteMenu={deleteMenu} listStaff={listStaff} getStaff={getStaff} createStaff={createStaff} updateStaff={updateStaff} deleteStaff={deleteStaff} sendPhoneOtp={sendPhoneOtp} verifyPhoneOtp={verifyPhoneOtp} onPhoneVerified={handlePhoneVerified} onLogout={() => { clearStoredAuth(); setAuth(null) }} />
   }
 
   if (isRestoring) return <div className="auth-loading" role="status">Loading your table...</div>
@@ -92,3 +92,4 @@ function App() {
 }
 
 export default App
+
